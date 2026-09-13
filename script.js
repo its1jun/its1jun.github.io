@@ -14,10 +14,11 @@ for (let i = 0; i < STAR_COUNT; i++) {
   star.style.left = left + '%';
   star.style.animationDelay = delay + 'ms';
 
+  // ::before, ::after 딜레이도 동일하게 (인라인 스타일은 가상요소에 못 미치므로 style 태그 사용)
   const style = document.createElement('style');
   style.textContent = `
-    .shooting_star:nth-child(${i + 1})::before,
-    .shooting_star:nth-child(${i + 1})::after {
+    #night .shooting_star:nth-child(${i + 1})::before,
+    #night .shooting_star:nth-child(${i + 1})::after {
       animation-delay: ${delay}ms;
     }
   `;
@@ -36,7 +37,9 @@ volumeSlider.value = 30;
 
 // 처음 클릭하면 재생 (브라우저 자동재생 차단 우회)
 document.addEventListener('click', function startBGM() {
-  bgm.play().then(() => toggleBtn.textContent = '🔊');
+  bgm.play().then(() => {
+    toggleBtn.textContent = '🔊';
+  }).catch(e => console.log('BGM 재생 실패:', e));
 }, { once: true });
 
 // 뮤트 / 재생 토글
