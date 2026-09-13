@@ -58,10 +58,41 @@ body {
   100% { width: 0; }
 }
 
-.bgm-toggle {
+.bgm-control {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+}
+
+/* 음량 슬라이더: 평소엔 숨김 */
+.bgm-volume {
+  width: 120px;
+  height: 30px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(10px);
+  accent-color: #5f91ff;
+  cursor: pointer;
+
+  /* 세로 슬라이더로 만들기 */
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+/* 마우스가 컨트롤 영역에 있으면 슬라이더 등장 */
+.bgm-control:hover .bgm-volume {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.bgm-toggle {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -71,7 +102,13 @@ body {
   font-size: 20px;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  z-index: 9999;
+  transition: background 0.2s, transform 0.2s;
+}
+
+/* 뮤트 버튼에 마우스 올리면 호버링 효과 */
+.bgm-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
 @keyframes shooting {
