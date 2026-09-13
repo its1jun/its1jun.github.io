@@ -6,9 +6,9 @@ for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');
   star.className = 'shooting_star';
 
-  // .night가 45도 회전되어 있으므로 좌표를 넓게 잡아 화면 전체를 덮음
-  const top = -50 + Math.random() * 200;   // -50% ~ 150%
-  const left = -50 + Math.random() * 200;  // -50% ~ 150%
+  // .night 회전이 없으니 좌표는 화면 전체를 커버
+  const top = 10 + Math.random() * 80;   // 10% ~ 90%
+  const left = 10 + Math.random() * 80;  // 10% ~ 90%
   const delay = Math.random() * 8000;
 
   star.style.top = top + '%';
@@ -35,7 +35,6 @@ const volumeSlider = document.getElementById('bgm-volume');
 bgm.volume = 0.3;
 volumeSlider.value = 30;
 
-// 페이지 로드되면 바로 재생 시도 (브라우저가 막으면 클릭 대기)
 bgm.play().then(() => {
   toggleBtn.textContent = '🔊';
 }).catch(() => {
@@ -45,7 +44,6 @@ bgm.play().then(() => {
   }, { once: true });
 });
 
-// 뮤트 / 재생 토글
 toggleBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   if (bgm.paused) {
@@ -57,7 +55,6 @@ toggleBtn.addEventListener('click', (e) => {
   }
 });
 
-// 음량 슬라이더 조절
 volumeSlider.addEventListener('input', (e) => {
   e.stopPropagation();
   bgm.volume = e.target.value / 100;
