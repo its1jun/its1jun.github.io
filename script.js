@@ -6,9 +6,8 @@ for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');
   star.className = 'shooting_star';
 
-  // .night 회전이 없으니 좌표는 화면 전체를 커버
-  const top = 10 + Math.random() * 80;   // 10% ~ 90%
-  const left = 10 + Math.random() * 80;  // 10% ~ 90%
+  const top = 10 + Math.random() * 80;
+  const left = 10 + Math.random() * 80;
   const delay = Math.random() * 8000;
 
   star.style.top = top + '%';
