@@ -30,4 +30,22 @@ for (let i = 0; i < STAR_COUNT; i++) {
   night.appendChild(star);
 }
 
-// 페이지 새로고침할 때마다 새로운 랜덤 배치
+// ===== BGM =====
+const bgm = document.getElementById('bgm');
+const toggleBtn = document.getElementById('bgm-toggle');
+bgm.volume = 0.3;
+
+document.addEventListener('click', function startBGM() {
+  bgm.play().then(() => toggleBtn.textContent = '🔊');
+}, { once: true });
+
+toggleBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (bgm.paused) {
+    bgm.play();
+    toggleBtn.textContent = '🔊';
+  } else {
+    bgm.pause();
+    toggleBtn.textContent = '🔇';
+  }
+});
