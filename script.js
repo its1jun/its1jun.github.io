@@ -6,9 +6,9 @@ for (let i = 0; i < STAR_COUNT; i++) {
   star.className = 'shooting_star';
 
   // 랜덤 위치: 화면 전체에 퍼지도록
-  const top = Math.random() * 90;   // 0 (top) ~ 90% (bottom)
-  const left = 5 + Math.random() * 90;  // 5 (left) ~ 95% (right)
-
+  const top = 10 + Math.random() * 80;  // 10% ~ 90%
+  const left = 10 + Math.random() * 80;  // 10% ~ 90%
+  
   // 랜덤 딜레이: 0 ~ 8초
   const delay = Math.random() * 8000;
 
