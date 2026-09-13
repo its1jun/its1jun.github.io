@@ -75,6 +75,6 @@ body {
 }
 
 @keyframes shooting {
-  0%   { transform: rotate(45deg) translateX(0); }
-  100% { transform: rotate(45deg) translateX(300px); }
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(300px, 300px); }
 }
