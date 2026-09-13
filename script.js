@@ -31,7 +31,7 @@ const bgm = document.getElementById('bgm');
 const toggleBtn = document.getElementById('bgm-toggle');
 const volumeSlider = document.getElementById('bgm-volume');
 
-bgm.volume = 0.3;
+bgm.volume = 0.1;
 volumeSlider.value = 30;
 
 bgm.play().then(() => {
