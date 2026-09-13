@@ -11,15 +11,14 @@ body {
   font-family: 'Anton', sans-serif;
 }
 
-/* .night를 45도 회전 → 유성은 가로로 이동해도 대각선으로 보임 */
 .night {
   position: relative;
   width: 100%;
   height: 100%;
-  transform: rotate(45deg);
+  /* 컨테이너는 회전하지 않음 */
 }
 
-/* 유성 본체: 회전 없이 가로로만 */
+/* 유성: 45도 기울어진 상태, 꼬리 포함 */
 .shooting_star {
   position: absolute;
   height: 2px;
@@ -27,6 +26,7 @@ body {
   background: linear-gradient(-45deg, rgba(95, 145, 255, 1), rgba(0, 0, 255, 0));
   border-radius: 999px;
   filter: drop-shadow(0 0 6px rgba(105, 155, 255, 1));
+  transform: rotate(45deg); /* 유성 자체를 45도 회전 */
   transform-origin: left center;
   animation:
     tail 3000ms ease-in-out infinite,
@@ -56,9 +56,9 @@ body {
 }
 
 @keyframes tail {
-  0%   { transform: scaleX(0); }
-  30%  { transform: scaleX(1); }
-  100% { transform: scaleX(0); }
+  0%   { transform: rotate(45deg) scaleX(0); }
+  30%  { transform: rotate(45deg) scaleX(1); }
+  100% { transform: rotate(45deg) scaleX(0); }
 }
 
 @keyframes shining {
@@ -67,10 +67,10 @@ body {
   100% { transform: scaleX(0); }
 }
 
-/* 유성은 가로로만 이동. .night가 45도 돌아가 있어서 대각선으로 보임 */
+/* 유성은 45도 회전한 채로 오른쪽 아래로 직선 이동 */
 @keyframes shooting {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(400px); }
+  0%   { transform: rotate(45deg) translate(0, 0); }
+  100% { transform: rotate(45deg) translate(300px, 300px); }
 }
 
 /* ===== BGM 컨트롤 ===== */
