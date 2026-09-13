@@ -17,7 +17,6 @@ body {
   height: 100%;
 }
 
-/* 유성 본체: 처음부터 45도 기울어진 상태 */
 .shooting_star {
   position: absolute;
   height: 2px;
@@ -25,7 +24,6 @@ body {
   background: linear-gradient(-45deg, rgba(95, 145, 255, 1), rgba(0, 0, 255, 0));
   border-radius: 999px;
   filter: drop-shadow(0 0 6px rgba(105, 155, 255, 1));
-  transform: rotate(45deg);
   animation:
     tail 3000ms ease-in-out infinite,
     shooting 3000ms ease-in-out infinite;
@@ -64,13 +62,11 @@ body {
   100% { width: 0; }
 }
 
-/* 대각선 이동: rotate(45deg) 상태에서 오른쪽으로 이동 = 오른쪽 아래 대각선 */
 @keyframes shooting {
-  0%   { transform: rotate(45deg) translateX(0); }
-  100% { transform: rotate(45deg) translateX(400px); }
+  0%   { transform: translate(0, 0) rotate(45deg); }
+  100% { transform: translate(300px, 300px) rotate(45deg); }
 }
 
-/* ===== BGM 컨트롤 ===== */
 .bgm-control {
   position: fixed;
   bottom: 20px;
