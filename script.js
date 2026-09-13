@@ -6,9 +6,9 @@ for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');
   star.className = 'shooting_star';
 
-  // .night가 45도 돌아가 있으니, 좌표는 넓게 잡아야 화면 전체 커버
-  const top = -20 + Math.random() * 140;   // -20% ~ 120%
-  const left = -20 + Math.random() * 140;  // -20% ~ 120%
+  // 회전이 없으니 좌표는 화면 전체를 커버
+  const top = 10 + Math.random() * 80;   // 10% ~ 90%
+  const left = 10 + Math.random() * 80;  // 10% ~ 90%
   const delay = Math.random() * 8000;
 
   star.style.top = top + '%';
@@ -35,7 +35,6 @@ const volumeSlider = document.getElementById('bgm-volume');
 bgm.volume = 0.3;
 volumeSlider.value = 30;
 
-// 파일 로드 상태 확인
 bgm.addEventListener('canplaythrough', () => {
   console.log('✅ BGM 파일 로드 성공');
 });
@@ -43,7 +42,7 @@ bgm.addEventListener('error', (e) => {
   console.error('❌ BGM 파일 로드 실패. music.mp3 파일이 같은 폴더에 있는지, 이름이 정확한지 확인하세요.', e);
 });
 
-// 처음 클릭하면 재생
+// 처음 클릭하면 재생 (브라우저 자동재생 차단 우회)
 document.addEventListener('click', function startBGM() {
   bgm.play().then(() => {
     toggleBtn.textContent = '🔊';
@@ -53,7 +52,6 @@ document.addEventListener('click', function startBGM() {
   });
 }, { once: true });
 
-// 뮤트 / 재생 토글
 toggleBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   if (bgm.paused) {
@@ -65,7 +63,6 @@ toggleBtn.addEventListener('click', (e) => {
   }
 });
 
-// 음량 슬라이더 조절
 volumeSlider.addEventListener('input', (e) => {
   e.stopPropagation();
   bgm.volume = e.target.value / 100;
