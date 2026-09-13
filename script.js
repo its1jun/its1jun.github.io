@@ -33,12 +33,17 @@ for (let i = 0; i < STAR_COUNT; i++) {
 // ===== BGM =====
 const bgm = document.getElementById('bgm');
 const toggleBtn = document.getElementById('bgm-toggle');
-bgm.volume = 0.3;
+const volumeSlider = document.getElementById('bgm-volume');
 
+bgm.volume = 0.3;
+volumeSlider.value = 30;
+
+// 처음 클릭하면 재생 (브라우저 자동재생 차단 우회)
 document.addEventListener('click', function startBGM() {
   bgm.play().then(() => toggleBtn.textContent = '🔊');
 }, { once: true });
 
+// 뮤트 / 재생 토글
 toggleBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   if (bgm.paused) {
@@ -48,4 +53,10 @@ toggleBtn.addEventListener('click', (e) => {
     bgm.pause();
     toggleBtn.textContent = '🔇';
   }
+});
+
+// 음량 슬라이더 조절
+volumeSlider.addEventListener('input', (e) => {
+  e.stopPropagation();
+  bgm.volume = e.target.value / 100;
 });
