@@ -6,9 +6,9 @@ for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');
   star.className = 'shooting_star';
 
-  // 시작점: 왼쪽 위쪽에 쏠리게 (오른쪽 아래로 이동하니까)
-  const top = Math.random() * 70;    // 0% ~ 70%
-  const left = Math.random() * 60;   // 0% ~ 60%
+  // .night가 45도 돌아가 있으니, 좌표는 넓게 잡아야 화면 전체 커버
+  const top = -20 + Math.random() * 140;   // -20% ~ 120%
+  const left = -20 + Math.random() * 140;  // -20% ~ 120%
   const delay = Math.random() * 8000;
 
   star.style.top = top + '%';
@@ -35,7 +35,7 @@ const volumeSlider = document.getElementById('bgm-volume');
 bgm.volume = 0.3;
 volumeSlider.value = 30;
 
-// 파일 로드 상태 확인 (F12 콘솔에서 확인 가능)
+// 파일 로드 상태 확인
 bgm.addEventListener('canplaythrough', () => {
   console.log('✅ BGM 파일 로드 성공');
 });
