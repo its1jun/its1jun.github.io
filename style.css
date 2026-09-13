@@ -11,15 +11,14 @@ body {
   font-family: 'Anton', sans-serif;
 }
 
-/* 컨테이너가 45도 회전 → 유성은 수평 이동해도 대각선으로 보임 */
+/* .night 회전 제거 */
 .night {
   position: relative;
   width: 100%;
   height: 100%;
-  transform: rotate(45deg);
 }
 
-/* 유성 본체: 회전 없음, width로 꼬리 표현 */
+/* 유성 자체를 45도 회전 */
 .shooting_star {
   position: absolute;
   height: 2px;
@@ -65,10 +64,10 @@ body {
   100% { width: 0; }
 }
 
-/* 유성은 수평 이동만. .night가 45도 돌아가 있어서 대각선으로 보임 */
+/* 유성은 오른쪽 아래 대각선으로 직선 이동 */
 @keyframes shooting {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(300px); }
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(300px, 300px); }
 }
 
 /* ===== BGM 컨트롤 ===== */
