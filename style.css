@@ -23,7 +23,7 @@ body {
 /* ===== 패널 (실제 보이는 메뉴) ===== */
 #menu-panel {
   position: fixed;
-  bottom: 0px;
+  bottom: 10px;
   left: 10px;
   display: none;
   flex-direction: column;
