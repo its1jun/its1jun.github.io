@@ -23,7 +23,7 @@ body {
 /* ===== 실제 보이는 패널 (스킨) ===== */
 #menu-panel {
   position: absolute;
-  bottom: 30px;
+  bottom: 70px;
   left: 10px;
   display: none;
   flex-direction: column;
