@@ -70,10 +70,10 @@ body {
   transform: rotate(90deg);
 }
 
-.menu-header .current-title {
-  font-weight: normal;
-  font-size: 12px;
+.current-title {
   color: #8ab4ff;
+  font-size: 12px;
+  padding: 0 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
