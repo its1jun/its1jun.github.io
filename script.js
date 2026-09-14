@@ -45,25 +45,26 @@ function buildMenu() {
   hitbox.appendChild(panel);
   document.body.appendChild(hitbox);
 
-  // 3. "음악" 헤더
+  // 3. "🎵 음악 ▶" 한 줄
   const header = document.createElement('div');
   header.className = 'menu-header';
 
   const headerTitle = document.createElement('span');
   headerTitle.textContent = '🎵 음악';
 
-  const headerCurrent = document.createElement('span');
-  headerCurrent.className = 'current-title';
-  headerCurrent.textContent = '(대기 중)';
-
   const headerArrow = document.createElement('span');
   headerArrow.className = 'arrow';
   headerArrow.textContent = '▶';
 
   header.appendChild(headerTitle);
-  header.appendChild(headerCurrent);
   header.appendChild(headerArrow);
   panel.appendChild(header);
+
+  // 3-1. "(현재 곡 제목)" 한 줄
+  const headerCurrent = document.createElement('div');
+  headerCurrent.className = 'current-title';
+  headerCurrent.textContent = '(대기 중)';
+  panel.appendChild(headerCurrent);
 
   // 4. 서브메뉴 (곡 목록)
   const submenu = document.createElement('div');
