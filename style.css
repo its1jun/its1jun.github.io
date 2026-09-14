@@ -10,7 +10,7 @@ body {
   font-family: sans-serif;
 }
 
-/* ===== 안 보이는 히트박스 (마우스 감지 전용) ===== */
+/* ===== 히트박스 (안 보이는 마우스 감지 전용) ===== */
 #menu-hitbox {
   position: fixed;
   bottom: 0;
@@ -20,9 +20,9 @@ body {
   z-index: 1000;
 }
 
-/* ===== 실제 보이는 패널 (스킨) ===== */
+/* ===== 패널 (실제 보이는 메뉴) ===== */
 #menu-panel {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   left: 10px;
   display: none;
@@ -37,11 +37,11 @@ body {
   z-index: 1001;
 }
 
-#menu-hitbox.open #menu-panel {
+#menu-panel.open {
   display: flex;
 }
 
-/* ===== "음악" 헤더 ===== */
+/* ===== "🎵 음악 ▶" 한 줄 ===== */
 .menu-header {
   color: white;
   font-family: sans-serif;
@@ -70,6 +70,7 @@ body {
   transform: rotate(90deg);
 }
 
+/* ===== "(현재 곡 제목)" 한 줄 ===== */
 .current-title {
   color: #8ab4ff;
   font-size: 12px;
