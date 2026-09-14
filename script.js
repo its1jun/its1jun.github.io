@@ -1,6 +1,6 @@
 // ===== BGM 재생 =====
 const playlist = [
-  'music/Sekaiwa Koi Ni Ochiteiru Inst.mp3'   // 노래 추가하면 여기에 파일명 넣기
+  'music/Sekaiwa Koi Ni Ochiteiru Inst.mp3',   // 노래 추가하면 여기에 파일명 넣기
   'toYouMyLight.mp3'
 ];
 
