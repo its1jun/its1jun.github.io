@@ -6,7 +6,7 @@ const playlist = [
 
 let currentIndex = 0;
 const audio = new Audio();
-audio.volume = 1.0;
+audio.volume = 0.3;
 
 // 곡이 끝나면 다음 곡 재생 (무한 반복)
 audio.addEventListener('ended', () => {
