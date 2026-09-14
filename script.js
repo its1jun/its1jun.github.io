@@ -35,17 +35,17 @@ fetch('playlist.json')
 
 // ===== 메뉴 생성 함수 =====
 function buildMenu() {
-  // 트리거
-  const trigger = document.createElement('div');
-  trigger.id = 'corner-trigger';
-  document.body.appendChild(trigger);
+  // 1. 히트박스 (안 보이는 마우스 감지 영역)
+  const hitbox = document.createElement('div');
+  hitbox.id = 'menu-hitbox';
 
-  // 메뉴 컨테이너
-  const menu = document.createElement('div');
-  menu.id = 'corner-menu';
-  document.body.appendChild(menu);
+  // 2. 패널 (실제 보이는 메뉴)
+  const panel = document.createElement('div');
+  panel.id = 'menu-panel';
+  hitbox.appendChild(panel);
+  document.body.appendChild(hitbox);
 
-  // "음악" 헤더
+  // 3. "음악" 헤더
   const header = document.createElement('div');
   header.className = 'menu-header';
 
@@ -63,14 +63,14 @@ function buildMenu() {
   header.appendChild(headerTitle);
   header.appendChild(headerCurrent);
   header.appendChild(headerArrow);
-  menu.appendChild(header);
+  panel.appendChild(header);
 
-  // 서브메뉴
+  // 4. 서브메뉴 (곡 목록)
   const submenu = document.createElement('div');
   submenu.className = 'submenu';
-  menu.appendChild(submenu);
+  panel.appendChild(submenu);
 
-  // 곡 목록
+  // 5. 곡 항목
   playlist.forEach((songPath, index) => {
     const item = document.createElement('div');
     item.className = 'song-item';
@@ -88,7 +88,7 @@ function buildMenu() {
     submenu.appendChild(item);
   });
 
-  // 볼륨 슬라이더 (메뉴 안, 곡 목록 아래 형제)
+  // 6. 볼륨 슬라이더
   const volumeRow = document.createElement('div');
   volumeRow.className = 'volume-row';
 
@@ -108,19 +108,19 @@ function buildMenu() {
 
   volumeRow.appendChild(volIcon);
   volumeRow.appendChild(volSlider);
-  menu.appendChild(volumeRow);
+  panel.appendChild(volumeRow);
 
-  // 메뉴 열고 닫기
-  trigger.addEventListener('mouseenter', () => menu.classList.add('open'));
-  menu.addEventListener('mouseleave', () => menu.classList.remove('open'));
+  // 7. 히트박스에만 마우스 이벤트 (크기 절대 안 변함)
+  hitbox.addEventListener('mouseenter', () => hitbox.classList.add('open'));
+  hitbox.addEventListener('mouseleave', () => hitbox.classList.remove('open'));
 
-  // 서브메뉴 펼침/접힘
+  // 8. "음악" 클릭 시 서브메뉴 펼침/접힘
   header.addEventListener('click', () => {
     submenu.classList.toggle('open');
     header.classList.toggle('open');
   });
 
-  // 초기 상태
+  // 9. 초기 상태
   updateActiveSong();
 }
 
