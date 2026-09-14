@@ -1,12 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #1b2735;
+  color: white;
+  font-family: sans-serif;
+}
+
 /* ===== 안 보이는 히트박스 (마우스 감지 전용) ===== */
 #menu-hitbox {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 260px;    /* 패널 최대 너비보다 크게 */
-  height: 340px;   /* 패널 최대 높이보다 크게 */
+  width: 260px;
+  height: 340px;
   z-index: 1000;
-  /* 배경 없음 = 투명 */
 }
 
 /* ===== 실제 보이는 패널 (스킨) ===== */
