@@ -1,28 +1,17 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background-color: #1b2735;
-  color: white;
-  font-family: sans-serif;
-}
-
-/* ===== 코너 트리거 ===== */
-#corner-trigger {
+/* ===== 안 보이는 히트박스 (마우스 감지 전용) ===== */
+#menu-hitbox {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 60px;
-  height: 60px;
+  width: 260px;    /* 패널 최대 너비보다 크게 */
+  height: 340px;   /* 패널 최대 높이보다 크게 */
   z-index: 1000;
+  /* 배경 없음 = 투명 */
 }
 
-/* ===== 메뉴 컨테이너 ===== */
-#corner-menu {
-  position: fixed;
+/* ===== 실제 보이는 패널 (스킨) ===== */
+#menu-panel {
+  position: absolute;
   bottom: 70px;
   left: 10px;
   display: none;
@@ -33,15 +22,15 @@ body {
   border-radius: 8px;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  z-index: 1001;
   min-width: 220px;
+  z-index: 1001;
 }
 
-#corner-menu.open {
+#menu-hitbox.open #menu-panel {
   display: flex;
 }
 
-/* ===== "음악" 대분류 버튼 ===== */
+/* ===== "음악" 헤더 ===== */
 .menu-header {
   color: white;
   font-family: sans-serif;
