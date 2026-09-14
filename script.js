@@ -1,6 +1,5 @@
 // ===== BGM 재생 =====
 const playlist = [
-  'music/Sekaiwa_Koi_Ni_Ochiteiru_Inst.mp3',
   'music/toYouMyLight.mp3'
 ];
 
