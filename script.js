@@ -35,17 +35,23 @@ fetch('playlist.json')
 
 // ===== 메뉴 생성 함수 =====
 function buildMenu() {
-  // 1. 히트박스 (안 보이는 마우스 감지 영역)
+  // ---------------------------------------------------
+  // 1. 히트박스 (마우스 감지 전용, 화면에 안 보임)
+  // ---------------------------------------------------
   const hitbox = document.createElement('div');
   hitbox.id = 'menu-hitbox';
-
-  // 2. 패널 (실제 보이는 메뉴)
-  const panel = document.createElement('div');
-  panel.id = 'menu-panel';
-  hitbox.appendChild(panel);
   document.body.appendChild(hitbox);
 
-  // 3. "🎵 음악 ▶" 한 줄
+  // ---------------------------------------------------
+  // 2. 패널 (실제 보이는 메뉴, 히트박스와 독립)
+  // ---------------------------------------------------
+  const panel = document.createElement('div');
+  panel.id = 'menu-panel';
+  document.body.appendChild(panel);
+
+  // ---------------------------------------------------
+  // 3. "🎵 음악 ▶" 헤더
+  // ---------------------------------------------------
   const header = document.createElement('div');
   header.className = 'menu-header';
 
@@ -60,18 +66,22 @@ function buildMenu() {
   header.appendChild(headerArrow);
   panel.appendChild(header);
 
-  // 3-1. "(현재 곡 제목)" 한 줄
+  // ---------------------------------------------------
+  // 4. "(현재 곡 제목)"
+  // ---------------------------------------------------
   const headerCurrent = document.createElement('div');
   headerCurrent.className = 'current-title';
   headerCurrent.textContent = '(대기 중)';
   panel.appendChild(headerCurrent);
 
-  // 4. 서브메뉴 (곡 목록)
+  // ---------------------------------------------------
+  // 5. 서브메뉴 (곡 목록)
+  // ---------------------------------------------------
   const submenu = document.createElement('div');
   submenu.className = 'submenu';
   panel.appendChild(submenu);
 
-  // 5. 곡 항목
+  // 곡 항목 생성
   playlist.forEach((songPath, index) => {
     const item = document.createElement('div');
     item.className = 'song-item';
@@ -89,24 +99,9 @@ function buildMenu() {
     submenu.appendChild(item);
   });
 
-  const volSlider = document.createElement('input');
-  volSlider.type = 'range';
-  volSlider.min = '0';
-  volSlider.max = '100';
-  volSlider.value = audio.volume * 100;
-
-  // 볼륨 조절: input + change 둘 다 (모바일 대응)
-  const setVolume = (e) => {
-    audio.volume = parseFloat(e.target.value) / 100;
-  };
-  volSlider.addEventListener('input', setVolume);
-  volSlider.addEventListener('change', setVolume);
-
-  // 모바일에서 슬라이더 드래그가 히트박스 이벤트로 새지 않게
-  volSlider.addEventListener('touchstart', (e) => e.stopPropagation());
-  volSlider.addEventListener('touchmove', (e) => e.stopPropagation());
-
-  // 볼륨 슬라이더 행 생성
+  // ---------------------------------------------------
+  // 6. 볼륨 슬라이더
+  // ---------------------------------------------------
   const volumeRow = document.createElement('div');
   volumeRow.className = 'volume-row';
 
@@ -114,35 +109,60 @@ function buildMenu() {
   volIcon.className = 'vol-icon';
   volIcon.textContent = '🔊';
 
+  const volSlider = document.createElement('input');
+  volSlider.type = 'range';
+  volSlider.min = '0';
+  volSlider.max = '100';
+  volSlider.value = audio.volume * 100;
+
+  const setVolume = (e) => {
+    audio.volume = parseFloat(e.target.value) / 100;
+  };
+  volSlider.addEventListener('input', setVolume);
+  volSlider.addEventListener('change', setVolume);
+
+  // 모바일에서 슬라이더 드래그가 다른 이벤트로 새지 않게
+  volSlider.addEventListener('touchstart', (e) => e.stopPropagation());
+  volSlider.addEventListener('touchmove', (e) => e.stopPropagation());
+
   volumeRow.appendChild(volIcon);
   volumeRow.appendChild(volSlider);
   panel.appendChild(volumeRow);
 
-  // ===== PC: 마우스 =====
-  hitbox.addEventListener('mouseenter', () => hitbox.classList.add('open'));
-  hitbox.addEventListener('mouseleave', () => hitbox.classList.remove('open'));
+  // ---------------------------------------------------
+  // 7. 패널 열기/닫기 (히트박스가 감지, 패널이 반응)
+  // ---------------------------------------------------
+  const openPanel = () => panel.classList.add('open');
+  const closePanel = () => panel.classList.remove('open');
 
-  // ===== 모바일: 터치 =====
-  // 히트박스 터치 → 메뉴 열기
+  // PC: 마우스
+  hitbox.addEventListener('mouseenter', openPanel);
+  hitbox.addEventListener('mouseleave', closePanel);
+
+  // 모바일: 터치
   hitbox.addEventListener('touchstart', (e) => {
     e.stopPropagation();
-    hitbox.classList.add('open');
+    openPanel();
   });
 
-  // 메뉴 바깥 터치 → 메뉴 닫기
+  // 메뉴 바깥 터치 → 닫기
   document.addEventListener('touchstart', (e) => {
-    if (!hitbox.contains(e.target)) {
-      hitbox.classList.remove('open');
+    if (!hitbox.contains(e.target) && !panel.contains(e.target)) {
+      closePanel();
     }
   });
 
-  // "🎵 음악" 클릭 시 서브메뉴 펼침/접힘
+  // ---------------------------------------------------
+  // 8. "🎵 음악" 클릭 → 서브메뉴 펼침/접힘
+  // ---------------------------------------------------
   header.addEventListener('click', () => {
     submenu.classList.toggle('open');
     header.classList.toggle('open');
   });
 
+  // ---------------------------------------------------
   // 9. 초기 상태
+  // ---------------------------------------------------
   updateActiveSong();
 }
 
