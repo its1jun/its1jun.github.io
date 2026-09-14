@@ -106,6 +106,14 @@ function buildMenu() {
   volSlider.addEventListener('touchstart', (e) => e.stopPropagation());
   volSlider.addEventListener('touchmove', (e) => e.stopPropagation());
 
+  // 볼륨 슬라이더 행 생성
+  const volumeRow = document.createElement('div');
+  volumeRow.className = 'volume-row';
+
+  const volIcon = document.createElement('span');
+  volIcon.className = 'vol-icon';
+  volIcon.textContent = '🔊';
+
   volumeRow.appendChild(volIcon);
   volumeRow.appendChild(volSlider);
   panel.appendChild(volumeRow);
