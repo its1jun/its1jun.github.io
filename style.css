@@ -1,0 +1,221 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #2c3e50 0%, #1b2735 60%, #0d141c 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  color: white;
+  font-family: sans-serif;
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ===== 별똥별 배경 (메뉴보다 아래, 화면 전체) ===== */
+#star-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+
+#star-bg span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 4px rgba(138, 180, 255, 0.1),
+    0 0 0 8px rgba(138, 180, 255, 0.1),
+    0 0 20px rgba(138, 180, 255, 0.1);
+  animation: shootingStar 3s linear infinite;
+}
+
+#star-bg span::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 1px;
+  background: linear-gradient(90deg, #8ab4ff, transparent);
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1000px);
+    opacity: 0;
+  }
+}
+
+#star-bg span:nth-child(1) { top: 0; right: 0; left: initial; animation-delay: 0s; animation-duration: 1s; }
+#star-bg span:nth-child(2) { top: 0; right: 80px; left: initial; animation-delay: 0.2s; animation-duration: 3s; }
+#star-bg span:nth-child(3) { top: 80px; right: 0; left: initial; animation-delay: 0.4s; animation-duration: 2s; }
+#star-bg span:nth-child(4) { top: 0; right: 180px; left: initial; animation-delay: 0.6s; animation-duration: 1.5s; }
+#star-bg span:nth-child(5) { top: 0; right: 400px; left: initial; animation-delay: 0.8s; animation-duration: 2.5s; }
+#star-bg span:nth-child(6) { top: 0; right: 600px; left: initial; animation-delay: 1s; animation-duration: 3s; }
+#star-bg span:nth-child(7) { top: 300px; right: 0; left: initial; animation-delay: 1.2s; animation-duration: 1.75s; }
+#star-bg span:nth-child(8) { top: 0; right: 700px; left: initial; animation-delay: 1.4s; animation-duration: 1.25s; }
+#star-bg span:nth-child(9) { top: 0; right: 450px; left: initial; animation-delay: 2.75s; animation-duration: 2.75s; }
+
+/* ===== 본문 콘텐츠는 배경 위에 오도록 ===== */
+h1 {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+}
+
+/* ===== 히트박스 (안 보이는 마우스 감지 전용) ===== */
+#menu-hitbox {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 260px;
+  height: 160px;
+  z-index: 1000;
+  /* 디버깅용 */
+  /*background: rgba(255, 0, 0, 0.3);
+  border: 2px solid red;*/
+}
+
+#menu-hitbox.expanded {
+  width: 290px;
+  height: 300px;
+}
+
+/* ===== 패널 (실제 보이는 메뉴) ===== */
+#menu-panel {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(27, 39, 53, 0.95);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  min-width: 220px;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+}
+
+#menu-panel.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== "🎵 음악 ▶" 한 줄 ===== */
+.menu-header {
+  color: white;
+  font-family: sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.menu-header:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-header .arrow {
+  transition: transform 0.2s;
+  font-size: 10px;
+}
+
+.menu-header.open .arrow {
+  transform: rotate(90deg);
+}
+
+/* ===== "(현재 곡 제목)" 한 줄 ===== */
+.current-title {
+  color: #8ab4ff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 서브메뉴 (곡 목록) ===== */
+.submenu {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 12px;
+  margin-top: 4px;
+}
+
+.submenu.open {
+  display: flex;
+}
+
+.submenu .song-item {
+  color: white;
+  font-family: sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.submenu .song-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.submenu .song-item.active {
+  color: #8ab4ff;
+  font-weight: bold;
+}
+
+/* ===== 볼륨 슬라이더 ===== */
+.volume-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-top: 4px;
+}
+
+.volume-row .vol-icon {
+  font-size: 14px;
+  color: white;
+}
+
+.volume-row input[type="range"] {
+  flex: 1;
+  accent-color: #5f91ff;
+  cursor: pointer;
+  height: 4px;
+}
