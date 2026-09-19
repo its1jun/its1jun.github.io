@@ -75,11 +75,28 @@ body {
 #star-bg span:nth-child(8) { top: 0; right: 700px; left: initial; animation-delay: 1.4s; animation-duration: 1.25s; }
 #star-bg span:nth-child(9) { top: 0; right: 450px; left: initial; animation-delay: 2.75s; animation-duration: 2.75s; }
 
-/* ===== 본문 콘텐츠는 배경 위에 오도록 ===== */
-h1 {
-  position: relative;
-  z-index: 1;
-  padding: 20px;
+/* ===== 중앙 패널 ===== */
+#main-panel {
+  position: fixed;
+  top: 5%;
+  bottom: 5%;
+  left: 15%;
+  right: 15%;
+  background: #ffffff;
+  border-radius: 16px;
+  z-index: 10;
+
+  padding: 25px; /*겉 여백(패딩)을 여기에 깔끔하게 한 번만 지정합니다 */
+  overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
+}
+
+/* 모바일 화면(폭 480px 이하)일 때 여백을 알아서 15px로 줄여줍니다 */
+@media (max-width: 480px) {
+  #main-panel {
+    left: 5%;
+    right: 5%;
+    padding: 15px;
+  }
 }
 
 /* ===== 히트박스 (안 보이는 마우스 감지 전용) ===== */
@@ -218,4 +235,10 @@ h1 {
   accent-color: #5f91ff;
   cursor: pointer;
   height: 4px;
+}
+
+.test-img {
+  width: 200px;
+  max-width: 100%;
+  display: block;
 }
