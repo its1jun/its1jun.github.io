@@ -1,0 +1,177 @@
+/* =====================================================
+   재사용 애니메이션 모음
+   -----------------------------------------------------
+   [기본 사용법]
+   애니메이션을 넣고 싶은 요소의 class에 이름을 추가합니다.
+     <div class="box anim-float-in">
+
+   [방향 바꾸기] 방향 클래스를 함께 추가합니다.
+     <div class="box anim-float-in from-top">
+
+   [속도/지연 바꾸기] 그 요소에만 적용하려면 style을 추가합니다.
+     <div class="box anim-float-in" style="--anim-duration: 1s; --anim-delay: 0.2s">
+
+   [전체 기본값 바꾸기] css/base.css 맨 위의 애니메이션 변수를 수정합니다.
+   ===================================================== */
+
+
+/* ---------- 1. 부드럽게 떠오르기 (anim-float-in) ----------
+   살짝만 이동하며 나타납니다. 기본: 아래에서 위로. */
+.anim-float-in {
+  --dir-x: 0;
+  --dir-y: 1;
+  animation: anim-float-in var(--anim-duration) var(--anim-ease) var(--anim-delay) backwards;
+}
+
+@keyframes anim-float-in {
+  from {
+    opacity: 0;
+    transform: translate(
+      calc(var(--dir-x) * var(--float-distance)),
+      calc(var(--dir-y) * var(--float-distance))
+    );
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+
+/* ---------- 2. 살짝 커지며 나타나기 (anim-scale-in) ----------
+   조금 작은 크기에서 원래 크기로 커지며 나타납니다. (방향 없음) */
+.anim-scale-in {
+  animation: anim-scale-in var(--anim-duration) var(--anim-ease) var(--anim-delay) backwards;
+}
+
+@keyframes anim-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--scale-from));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* ---------- 3. 슬라이드 (anim-slide-in) ----------
+   떠오르기보다 더 멀리서 들어옵니다. 기본: 위에서 아래로 내려옴.
+   아래에서 올라오게 하려면 from-bottom 을 함께 추가하세요. */
+.anim-slide-in {
+  --dir-x: 0;
+  --dir-y: -1;
+  animation: anim-slide-in var(--anim-duration) var(--anim-ease) var(--anim-delay) backwards;
+}
+
+@keyframes anim-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(
+      calc(var(--dir-x) * var(--slide-distance)),
+      calc(var(--dir-y) * var(--slide-distance))
+    );
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+
+/* ---------- 방향 클래스 (float, slide 공통) ----------
+   "어디에서 출발하는가"를 뜻합니다.
+   주의: 반드시 위의 애니메이션 정의보다 아래에 있어야 적용됩니다. */
+.from-top    { --dir-x: 0;  --dir-y: -1; }  /* 위에서 내려옴 */
+.from-bottom { --dir-x: 0;  --dir-y: 1;  }  /* 아래에서 올라옴 */
+.from-left   { --dir-x: -1; --dir-y: 0;  }  /* 왼쪽에서 들어옴 */
+.from-right  { --dir-x: 1;  --dir-y: 0;  }  /* 오른쪽에서 들어옴 */
+
+
+/* =====================================================
+   사라지는 애니메이션 (anim-○○-out)
+   끝난 뒤에도 투명한 상태로 유지되며 클릭은 통과합니다.
+   방향 클래스는 "어디로 사라지는가"를 뜻하는 to-○○ 를 사용합니다.
+     예) <div class="anim-slide-out to-bottom">  (아래로 내려가며 사라짐)
+   ===================================================== */
+
+/* ---------- 4. 떠오르며 사라지기 (anim-float-out) ---------- 기본: 아래로 */
+.anim-float-out {
+  --dir-x: 0;
+  --dir-y: 1;
+  animation: anim-float-out var(--anim-duration) var(--anim-ease) var(--anim-delay) forwards;
+  pointer-events: none;
+}
+
+@keyframes anim-float-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(
+      calc(var(--dir-x) * var(--float-distance)),
+      calc(var(--dir-y) * var(--float-distance))
+    );
+  }
+}
+
+/* ---------- 5. 작아지며 사라지기 (anim-scale-out) ---------- 방향 없음 */
+.anim-scale-out {
+  animation: anim-scale-out var(--anim-duration) var(--anim-ease) var(--anim-delay) forwards;
+  pointer-events: none;
+}
+
+@keyframes anim-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--scale-from));
+  }
+}
+
+/* ---------- 6. 슬라이드로 사라지기 (anim-slide-out) ---------- 기본: 위로 */
+.anim-slide-out {
+  --dir-x: 0;
+  --dir-y: -1;
+  animation: anim-slide-out var(--anim-duration) var(--anim-ease) var(--anim-delay) forwards;
+  pointer-events: none;
+}
+
+@keyframes anim-slide-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(
+      calc(var(--dir-x) * var(--slide-distance)),
+      calc(var(--dir-y) * var(--slide-distance))
+    );
+  }
+}
+
+/* ---------- 사라지는 방향 클래스 (float-out, slide-out 공통) ----------
+   반드시 위의 -out 정의보다 아래에 있어야 적용됩니다. */
+.to-top    { --dir-x: 0;  --dir-y: -1; }  /* 위로 사라짐 */
+.to-bottom { --dir-x: 0;  --dir-y: 1;  }  /* 아래로 사라짐 */
+.to-left   { --dir-x: -1; --dir-y: 0;  }  /* 왼쪽으로 사라짐 */
+.to-right  { --dir-x: 1;  --dir-y: 0;  }  /* 오른쪽으로 사라짐 */
+
+
+/* ---------- 움직임 줄이기 설정 존중 ----------
+   사용자가 기기에서 "동작 줄이기"를 켰다면 애니메이션 없이 바로 표시합니다. */
+@media (prefers-reduced-motion: reduce) {
+  [class*="anim-"] {
+    animation: none;
+  }
+  [class*="anim-"][class*="-out"] {   /* ← 이 3줄 추가 */
+    opacity: 0;
+  }
+}

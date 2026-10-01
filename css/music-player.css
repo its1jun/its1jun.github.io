@@ -1,0 +1,66 @@
+/* 음악 플레이어 박스: 왼쪽 아래 (여백은 화면 크기에 맞춰 자동 조절) */
+.player {
+  position: fixed;
+  left: max(var(--edge), env(safe-area-inset-left));
+  bottom: max(var(--edge), env(safe-area-inset-bottom));
+  /* 좁은 화면에서는 오른쪽 설정 버튼과 겹치지 않도록 너비가 줄어듦 */
+  width: min(var(--panel-width), calc(100vw - 2 * var(--edge) - var(--btn-size) - var(--gap)));
+  padding: var(--panel-pad);
+  box-sizing: border-box;
+  background: var(--bg-panel);
+  color: var(--text-panel);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.player-title {
+  margin: 0 0 0.625rem;
+  font-size: var(--font-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-seek {
+  display: block;
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.player-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+}
+
+.player-buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--gap);
+  margin-top: 0.5rem;
+}
+
+.player-buttons button {
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg-control);
+  color: var(--text-panel);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.player-buttons button:hover {
+  background: var(--bg-control-hover);
+}
+
+.player button:focus-visible,
+.player-seek:focus-visible {
+  outline: 2px solid var(--text-panel);
+  outline-offset: 2px;
+}
