@@ -1,10 +1,8 @@
 // 다른 파일과 변수 이름이 겹치지 않도록 전체를 함수로 감쌈
+// ※ 볼륨 조절은 음악 플레이어로 옮길 예정이라 이 파일에는 메뉴 열기/닫기만 있다.
 (function () {
   const toggleBtn = document.getElementById("settings-toggle");
   const panel = document.getElementById("settings-panel");
-  const volumeInput = document.getElementById("volume");
-  const volumeValue = document.getElementById("volume-value");
-  const audioEl = document.getElementById("audio"); // 음악 플레이어의 오디오
 
   // ---- 메뉴 열기 / 닫기 ----
   // 패널의 열림 상태는 ".visible" 클래스 유무로만 판단한다. (hidden 속성 사용 금지)
@@ -26,30 +24,5 @@
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setOpen(false);
-  });
-
-  // ---- 볼륨 ----
-  const STORAGE_KEY = "volume";
-
-  function applyVolume(percent) {
-    audioEl.volume = percent / 100;
-    volumeInput.value = percent;
-    volumeValue.textContent = percent + "%";
-  }
-
-  // 저장된 볼륨이 있으면 불러오고, 없으면 80%
-  let saved = 20;
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored !== null) saved = Number(stored);
-  } catch (e) {}
-  applyVolume(saved);
-
-  volumeInput.addEventListener("input", () => {
-    const percent = Number(volumeInput.value);
-    applyVolume(percent);
-    try {
-      localStorage.setItem(STORAGE_KEY, percent);
-    } catch (e) {}
   });
 })();
