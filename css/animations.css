@@ -165,13 +165,29 @@
 .to-right  { --dir-x: 1;  --dir-y: 0;  }  /* 오른쪽으로 사라짐 */
 
 
+/* =====================================================
+   반복 애니메이션
+   ===================================================== */
+
+/* ---------- 7. 계속 회전 (anim-spin) ----------
+   끝없이 반복되는 회전. LP판 등에 사용. 한 바퀴 시간은 base.css 의 --spin-duration. */
+.anim-spin {
+  animation: anim-spin var(--spin-duration) linear infinite;
+}
+
+@keyframes anim-spin {
+  to { transform: rotate(360deg); }
+}
+
+
 /* ---------- 움직임 줄이기 설정 존중 ----------
-   사용자가 기기에서 "동작 줄이기"를 켰다면 애니메이션 없이 바로 표시합니다. */
+   사용자가 기기에서 "동작 줄이기"를 켰다면 애니메이션 없이 바로 표시합니다.
+   (-out 은 애니메이션 없이 바로 투명하게 만듭니다) */
 @media (prefers-reduced-motion: reduce) {
   [class*="anim-"] {
     animation: none;
   }
-  [class*="anim-"][class*="-out"] {   /* ← 이 3줄 추가 */
+  [class*="anim-"][class*="-out"] {
     opacity: 0;
   }
 }
