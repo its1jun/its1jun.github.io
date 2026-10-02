@@ -8,8 +8,8 @@
   var scale = Math.min(1, Math.max(0.25, (innerWidth * innerHeight) / (1920 * 1080)));
   var DOTS = Math.round(80 * scale);                    // 흰 점 개수
   var MAX_STARS = Math.max(2, Math.round(10 * scale));  // 동시에 보이는 별똥별 최대 개수
-  var GAP_MIN = 0.3 / Math.sqrt(scale);                 // 다음 별똥별까지 최소 간격(초)
-  var GAP_MAX = 2.0 / Math.sqrt(scale);                 // 다음 별똥별까지 최대 간격(초)
+  var GAP_MIN = 0.1 / Math.sqrt(scale);                 // 다음 별똥별까지 최소 간격(초)
+  var GAP_MAX = 1.5 / Math.sqrt(scale);                 // 다음 별똥별까지 최대 간격(초)
 
   function rand(a, b) { return a + Math.random() * (b - a); }
 
