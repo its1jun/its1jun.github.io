@@ -3,33 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Site</title>
+  <title>its1jun</title>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/music-player.css">
   <link rel="stylesheet" href="css/settings-menu.css">
   <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/Shooting-stars.css">
 </head>
 <body>
 
   <main>
-    <h1>My Site</h1>
+    <h1>나여, 權晙賢</h1>
   </main>
 
-  <!-- 음악 플레이어 (왼쪽 아래) -->
-  <section class="player" aria-label="음악 플레이어">
-    <p class="player-title" id="title">불러오는 중…</p>
-    <input class="player-seek" id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="재생 위치">
-    <div class="player-time">
-      <span id="current">0:00</span>
-      <span id="duration">0:00</span>
+  <!-- LP판 그림: 한 번만 정의하고 아래에서 <use href="#record-art"> 로 재사용 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="record-art" viewBox="0 0 128 128">
+      <!-- 검은 판: 바깥 원 -->
+      <circle cx="64" cy="64" r="64" fill="#675D50"></circle>
+      <!-- 안쪽 링: 위/아래는 크림색, 좌/우는 갈색 (회전이 눈에 보이게 함) -->
+      <g fill="none" stroke-width="3">
+        <path d="M31.5 31.5 A46 46 0 0 1 96.5 31.5" stroke="#F3DEBA"></path>
+        <path d="M31.5 96.5 A46 46 0 0 0 96.5 96.5" stroke="#F3DEBA"></path>
+        <path d="M31.5 31.5 A46 46 0 0 0 31.5 96.5" stroke="#675D50"></path>
+        <path d="M96.5 31.5 A46 46 0 0 1 96.5 96.5" stroke="#675D50"></path>
+      </g>
+      <!-- 가운데 라벨 -->
+      <circle cx="64" cy="64" r="30" fill="#F3DEBA"></circle>
+    </symbol>
+  </svg>
+
+  <!-- 음악 플레이어 (왼쪽 아래). 원본: Uiverse.io by hoshikawamaki 를 일반 CSS로 옮긴 것
+       스타일: css/music-player.css / 동작: js/music-player.js
+       JS가 사용하는 id: player, title, title-track, title-text, title-clone, seek, current, duration,
+                         prev, next, playStatus, menu-btn, volume-btn, volume, volume-value, audio
+       상태 클래스(JS가 #player 에 붙였다 뗌): .expanded(펼침) / .is-playing(재생 중) / .volume-open(볼륨 바 열림)
+       클릭으로 펼침/접힘: data-player-toggle 이 붙은 두 요소(위쪽 LP판 / 곡 정보 줄)뿐 -->
+  <div class="player" id="player">
+
+    <!-- 위쪽 LP판 (접힌 상태에서만 보임). 클릭하면 펼쳐짐 -->
+    <div class="player-record-top" data-player-toggle role="button" tabindex="0"
+         aria-expanded="false" aria-label="플레이어 펼치기">
+      <svg class="record-art record-art-lg anim-spin" viewBox="0 0 128 128"><use href="#record-art"></use></svg>
+      <div class="record-hole record-hole-lg"></div>
     </div>
-    <div class="player-buttons">
-      <button id="prev" type="button" aria-label="이전 곡">⏮</button>
-      <button id="play" type="button" aria-label="재생">▶</button>
-      <button id="next" type="button" aria-label="다음 곡">⏭</button>
+
+    <div class="player-card">
+
+      <!-- 1행: 안쪽 LP판 + 곡 제목 (펼쳤을 때만 보임). 클릭하면 접힘 -->
+      <div class="player-info" data-player-toggle role="button" tabindex="-1"
+           aria-expanded="false" aria-label="플레이어 접기">
+        <div class="player-info-record">
+          <svg class="record-art record-art-sm" viewBox="0 0 128 128"><use href="#record-art"></use></svg>
+          <div class="record-hole record-hole-sm"></div>
+        </div>
+        <div class="player-info-text">
+          <!-- 제목: 바깥 상자(#title)가 넘친 글씨를 가리고, 안의 track 이 왼쪽으로 흐른다.
+               title-clone 은 끊김 없이 이어 보이게 하는 복제본이다. (JS가 같은 글씨를 채움) -->
+          <p class="player-title" id="title">
+            <span class="player-title-track" id="title-track">
+              <span id="title-text">Music Name</span>
+              <span id="title-clone" aria-hidden="true"></span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- 2행: 재생 바 (시간 표시는 펼쳤을 때만 보임) -->
+      <div class="player-seekrow">
+        <span class="player-time player-time-start" id="current">0:00</span>
+        <input class="player-seek" id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="재생 위치">
+        <span class="player-time player-time-end" id="duration">0:00</span>
+      </div>
+
+      <!-- 3행: 버튼들 -->
+      <div class="player-controls">
+
+        <!-- 노래 메뉴 (펼쳤을 때만 보임). 누르면 아래에 노래 목록이 열리고 닫힘 -->
+        <button class="player-btn player-btn-side player-btn-menu" id="menu-btn" type="button"
+                aria-label="노래 목록" aria-expanded="false" aria-controls="player-list">
+          <svg class="icon-muted" viewBox="0 0 24 24">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- 이전 곡 -->
+        <div class="player-btn" id="prev">
+          <svg viewBox="0 0 24 24">
+            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+            <line x1="5" y1="19" x2="5" y2="5"></line>
+          </svg>
+        </div>
+
+        <!-- 재생/일시정지: 체크박스가 켜지면 일시정지 아이콘이 보임 -->
+        <label class="player-btn" for="playStatus">
+          <input class="player-check" type="checkbox" id="playStatus">
+          <svg class="icon-play" viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <svg class="icon-pause" viewBox="0 0 24 24">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </label>
+
+        <!-- 다음 곡 -->
+        <div class="player-btn" id="next">
+          <svg viewBox="0 0 24 24">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+          </svg>
+        </div>
+
+        <!-- 볼륨 (펼쳤을 때만 보임). 누르면 아래에 볼륨 바가 열리고 닫힘 -->
+        <button class="player-btn player-btn-side player-btn-volume" id="volume-btn" type="button"
+                aria-label="볼륨 조절" aria-expanded="false" aria-controls="player-volume">
+          <svg class="icon-muted" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 4행: 볼륨 바 (볼륨 버튼을 눌렀을 때만 보임) -->
+      <div class="player-volume" id="player-volume">
+        <input class="player-seek" id="volume" type="range" min="0" max="100" value="20" step="1" aria-label="볼륨">
+        <span class="player-volume-value" id="volume-value">20%</span>
+      </div>
+      <!-- 5행: 노래 목록 (노래 메뉴 버튼을 눌렀을 때만 보임). 항목은 JS가 playlist 로 채움 -->
+      <div class="player-list" id="player-list">
+        <ul id="playlist-items"></ul>
+      </div>
     </div>
+
     <audio id="audio" preload="metadata"></audio>
-  </section>
+  </div>
 
   <!-- 설정 메뉴 (오른쪽 아래) -->
   <div class="settings">
@@ -37,19 +150,17 @@
     <div class="settings-panel" id="settings-panel">
       <h2 class="settings-heading">설정</h2>
 
-      <div class="settings-row">
-        <label class="settings-label" for="volume">
-          <span>볼륨</span>
-          <span class="settings-value" id="volume-value">80%</span>
-        </label>
-        <input class="settings-range" id="volume" type="range" min="0" max="100" value="80" step="1">
-      </div>
+      <!-- 설정 항목이 생기면 여기에 <div class="settings-row">…</div> 를 추가 (볼륨은 플레이어에 있음) -->
     </div>
 
     <button class="settings-toggle" id="settings-toggle" type="button" aria-label="설정" aria-expanded="false" aria-controls="settings-panel">⚙</button>
   </div>
 
+<div class="bgx-shooting-stars" aria-hidden="true"></div>
+
   <script src="js/music-player.js"></script>
   <script src="js/settings-menu.js"></script>
+  <script src="js/shooting-stars.js"></script>
 </body>
 </html>
+
