@@ -123,6 +123,16 @@ index.html을 더블클릭해서 열면 보안 정책 때문에 playlist.json을
 - 짧은 전환 시간은 base.css 의 --anim-duration-fast 를 쓴다.
 
 
+[음악 플레이어 상태 클래스] (#player 에 JS가 붙였다 뗌)
+- .expanded    펼침 (위쪽 LP판 클릭으로 펼침 / 곡 정보 줄 클릭 또는 Esc 로 접음)
+- .is-playing  재생 중. 없으면 LP판 회전이 멈춤 (animation-play-state: paused)
+- .volume-open 볼륨 바 열림. 펼친 상태에서만 의미가 있고, 접으면 자동으로 닫힘
+
+- 제목이 영역보다 길면(펼친 상태) 5초 쉬고 → 왼쪽으로 한 바퀴 흐르고 → 정지 → 반복.
+  원본+복제본을 이어 붙여 끊김 없이 보이게 한다. 대기 시간/속도는 music-player.js 맨 위 상수.
+- 맨 왼쪽 버튼 = 노래 메뉴 (아직 기능 없음), 맨 오른쪽 버튼 = 볼륨 바 열기/닫기
+- 볼륨은 localStorage "volume" 에 저장 (기본 20%)
+
 [앞으로 추가 예정]
 
 - (여기에 추가하고 싶은 기능을 적어둔다)
