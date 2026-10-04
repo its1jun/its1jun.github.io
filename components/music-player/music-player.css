@@ -1,0 +1,424 @@
+/* 음악 플레이어 (왼쪽 아래)
+   구조: .player > .player-record-top(위쪽 LP) + .player-card(info / seekrow / controls / volume / list)
+   상태 클래스(JS가 #player 에 붙였다 뗌): .expanded / .is-playing / .volume-open / .list-open */
+
+.player {
+  /* 접힌 카드 높이 구성 (각 줄 높이를 바꾸면 카드 높이가 자동으로 맞춰짐) */
+  --info-h-closed: 2rem;    /* 제목 줄: 제목 위아래 여백은 이 값으로 조절 */
+  --seek-h: 1.25rem;        /* 재생 바 줄 */
+  --play-btn: 2rem;         /* 재생 버튼 지름 */
+  --card-pad-bottom: 1rem;  /* 버튼 아래 여백 */
+  --card-h: calc(var(--info-h-closed) + var(--seek-h) + var(--play-btn) + var(--card-pad-bottom));
+
+  /* 펼친 상태 크기 */
+  --card-w: 10rem;
+  --card-w-open: min(16.5rem, calc(100vw - 2 * var(--edge) - var(--btn-size) - var(--gap)));
+  --info-h-open: 4.5rem;
+  --card-h-open: calc(var(--info-h-open) + var(--seek-h) + var(--play-btn) + var(--card-pad-bottom));
+
+  /* LP판, 제목 */
+  --record-lg: 8rem;
+  --record-sm: 3.5rem;
+  --marquee-gap: 2rem;
+
+  /* 볼륨 바 / 노래 목록 (목록은 --list-visible 개만 보이고 나머지는 스크롤) */
+  --volume-h: var(--list-item-h);   /* 볼륨 줄 높이 = 목록 한 줄 높이 (목록 4줄 → 3줄로 바뀔 때 전체 높이가 딱 맞음) */
+  --list-item-h: 2rem;
+  --list-visible: 4;
+  --list-h: calc(var(--list-item-h) * var(--list-visible) + 0.75rem);
+
+  /* 열린 행만큼 카드가 늘어나는 높이 (상태 클래스가 값을 바꿈) */
+  --extra-vol: 0rem;
+  --extra-list: 0rem;
+
+  /* 모든 전환에 쓰는 공통 시간 + 곡선 */
+  --ease-all: var(--anim-duration-expand) var(--anim-ease);
+
+  position: fixed;
+  left: max(var(--edge), env(safe-area-inset-left));
+  bottom: max(var(--edge), env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.player,
+.player * { box-sizing: border-box; }
+.player p { margin: 0; }
+:where(.player) svg { display: block; }
+
+/* ---------- LP판 ---------- */
+.record-art { border-radius: 50%; }
+.record-art-lg { width: var(--record-lg); height: var(--record-lg); }
+.record-art-sm { width: var(--record-sm); height: var(--record-sm); }
+
+/* LP 가운데 점: --d(LP 지름)의 15.625% 크기로 정중앙에 놓임 */
+.record-hole {
+  --d: var(--record-lg);
+  position: absolute;
+  z-index: 10;
+  top: calc(var(--d) / 2);
+  left: 50%;
+  width: calc(var(--d) * 0.15625);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--player-dark);
+}
+.record-hole-sm { --d: var(--record-sm); }
+
+/* ---------- 위쪽 LP판: 위쪽 절반만 보이고 펼치면 카드 뒤로 사라짐 ---------- */
+.player-record-top {
+  position: relative;
+  z-index: 0;
+  height: 4rem;
+  margin-bottom: -0.5rem;
+  cursor: pointer;
+  transition: var(--ease-all);
+}
+
+/* ---------- 카드 ---------- */
+.player-card {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 1rem;
+  background: var(--player-card-bg);
+  color: var(--player-text);
+  box-shadow: var(--shadow-card);
+  transition: var(--ease-all);
+}
+
+/* ---------- 1행: 안쪽 LP판 + 곡 제목 ----------
+   접힘: LP판이 투명하고 마진이 -지름이라 자리를 차지하지 않음 (제목이 그 자리까지 사용)
+   펼침: 마진이 양수가 되며 LP판이 나타나고 제목이 밀려남 */
+.player-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--info-h-closed);
+  padding: 0 0.75rem;
+  pointer-events: none;  /* 접힌 상태에서는 클릭 통과 */
+  transition: var(--ease-all);
+}
+
+.player-info-record {
+  position: relative;
+  flex: none;
+  width: var(--record-sm);
+  height: var(--record-sm);
+  margin-right: calc(-1 * var(--record-sm));
+  opacity: 0;
+  transition: var(--ease-all);
+}
+
+/* LP 회전은 항상 걸어 두고 재생 중이 아니면 멈춤 (접었다 펼쳐도 각도 유지) */
+.player-info-record { animation: anim-spin var(--spin-duration) linear infinite; }
+.player:not(.is-playing) .anim-spin,
+.player:not(.is-playing) .player-info-record { animation-play-state: paused; }
+
+.player-info-text {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ---------- 제목 (넘치면 왼쪽으로 흐름) ----------
+   바깥 상자(.player-title)가 넘친 글씨를 가리고, track 이 움직인다.
+   이동 거리/시간은 JS가 --marquee-shift, --marquee-duration 으로 지정 */
+.player-title {
+  overflow: hidden;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  line-height: 1.5rem;
+  white-space: nowrap;
+}
+/* 접힌 상태: 제목이 상자보다 짧으면 가운데 정렬 (길면 min-width 가 의미 없어져 왼쪽부터 흐름) */
+.player-title-track { display: flex; width: max-content; min-width: 100%; }
+
+/* 제목 글씨: 기본 = 왼쪽, 접힘 = 가운데까지 밀림 (거리는 JS가 --title-center-shift 로 지정) */
+.player-title-track > span { flex: none; }
+
+#title-text {
+  display: inline-block;
+  transition: transform var(--ease-all);
+}
+.player:not(.expanded) #title-text {
+  transform: translateX(var(--title-center-shift, 0px));
+}
+
+/* ---------- 아티스트 (펼쳤을 때만 보임) ----------
+   접힘: 높이 0 + 투명 + 보조기기에서도 숨김 → 접힌 카드의 제목 위치는 그대로 */
+.player-artist {
+  --artist-h: 1.25rem;     /* 아티스트 줄 높이 */
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  color: var(--player-muted);
+  font-size: var(--font-md);
+  line-height: var(--artist-h);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: var(--ease-all);
+}
+.player.expanded .player-artist { height: var(--artist-h); opacity: 1; visibility: visible; }
+.player-artist:empty { display: none; }   /* 아티스트 정보가 없는 곡은 줄 자체를 없애 제목이 가운데에 오게 함 */
+
+#title-clone { display: none; padding-left: var(--marquee-gap); }
+.player-title.is-overflowing #title-clone { display: block; }
+
+.player-title-track.is-running {
+  animation: marquee-scroll var(--marquee-duration) linear 1 forwards;
+}
+@keyframes marquee-scroll {
+  to { transform: translateX(calc(-1 * var(--marquee-shift))); }
+}
+
+/* 재생 바 줄: 높이는 --seek-h 로 고정 */
+.player-seekrow {
+  display: flex;
+  align-items: center;
+  height: var(--seek-h);
+  margin: 0 0.75rem;
+}
+
+.player-time {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  color: var(--player-muted);
+  font-size: var(--font-sm);
+  line-height: 1rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;  /* 숫자 너비 고정 */
+  transition: var(--ease-all);
+}
+.player-time-end { text-align: right; }
+
+.player-seek {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 0.25rem;
+  margin: auto 0.5rem;
+  border-radius: 9999px;
+  background: var(--player-track-bg);
+}
+
+/* 손잡이: 흰색 원 (재생 바와 볼륨 바 공통). 브라우저별 선택자는 묶을 수 없어 둘로 나눔 */
+.player-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 0.125rem solid var(--player-card-bg);
+  border-radius: 50%;
+  background: var(--player-text);
+  cursor: pointer;
+}
+.player-seek::-moz-range-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 0.125rem solid var(--player-card-bg);
+  border-radius: 50%;
+  background: var(--player-text);
+  cursor: pointer;
+}
+
+/* ---------- 3행: 버튼들 ---------- */
+.player-controls {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin: 0 0.75rem 0;
+  transition: var(--ease-all);
+}
+
+.player:not(.volume-open):not(.list-open) .player-controls {
+  margin-bottom: var(--controls-mb-closed);
+}
+
+.player-btn {
+  display: flex;
+  flex: 0 1 3rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.player-btn svg {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 재생/일시정지: 흰 원 + 검정 아이콘 (지름은 --play-btn) */
+label.player-btn {
+  flex: none;
+  width: var(--play-btn);
+  height: var(--play-btn);
+  border-radius: 50%;
+  background: var(--player-text);
+  color: var(--player-card-bg);
+}
+label.player-btn svg { width: 50%; height: 50%; }
+
+/* 양 끝 버튼(목록/볼륨): 접힘 = 너비 0 + 투명 + 포커스 불가 */
+.player-btn-side {
+  flex-basis: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--ease-all);
+}
+.player-btn .icon-muted {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: var(--player-icon-muted);
+  transition: stroke var(--ease-all);
+}
+.player.volume-open .player-btn-volume .icon-muted,
+.player.list-open .player-btn-list .icon-muted { stroke: var(--player-text); }
+
+/* 체크박스는 숨기고 체크 여부로 재생/일시정지 아이콘만 바꿈 */
+.player-check,
+.icon-pause,
+.player-check:checked ~ .icon-play { display: none; }
+.player-check:checked ~ .icon-pause { display: block; }
+
+/* ---------- 4행 볼륨 바 / 5행 노래 목록 (기본: 높이 0 + 투명 + 포커스 불가) ----------
+   visibility 도 같은 시간으로 전환하면 닫힐 때 애니메이션이 끝난 뒤에 숨겨진다. */
+.player-volume,
+.player-list {
+  flex: none;
+  height: 0;
+  margin: 0 0.75rem;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--ease-all);
+}
+
+.player-volume {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--player-muted);
+  font-size: var(--font-md);
+}
+.player-volume .player-seek { margin: 0; }
+.player-volume-value { min-width: 2.5rem; text-align: right; }
+
+.player-list ul {
+  height: 100%;
+  margin: 0;
+  padding: 0.25rem 0 0.5rem;
+  overflow-y: auto;  /* 항목이 --list-visible 개보다 많으면 스크롤 (스크롤바는 숨김, 휠/터치로 이동) */
+  list-style: none;
+  scrollbar-width: none;  /* Firefox 와 최신 Chrome/Edge 에서 스크롤바 숨김 */
+}
+
+/* Safari 와 옛 Chrome 용 스크롤바 숨김 (위 scrollbar-width 를 모르는 브라우저) */
+.player-list ul::-webkit-scrollbar { display: none; }
+
+/* 아래에 더 볼 곡이 있으면(JS가 .has-more 를 붙임) 목록 아래쪽을 살짝 흐리게 */
+.player-list ul.has-more {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--list-fade-h)), rgb(0 0 0 / var(--list-fade-end)));
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--list-fade-h)), rgb(0 0 0 / var(--list-fade-end)));
+}
+
+.player-list-item {
+  display: block;
+  width: 100%;
+  height: var(--list-item-h);
+  padding: 0 0.5rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--font-md);
+  line-height: var(--list-item-h);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.player-list-item:hover { background: var(--player-bar-bg); }
+
+/* 재생 중인 곡: 흰 배경 + 검정 글씨 */
+.player-list-item.is-current {
+  background: var(--player-text);
+  color: var(--player-card-bg);
+  font-weight: 700;
+}
+
+/* ---------- 키보드 포커스 ---------- */
+.player-record-top:focus-visible,
+.player-info:focus-visible,
+.player-btn:focus-visible {
+  outline: 2px solid var(--player-border);
+  outline-offset: 2px;
+  border-radius: 1rem;
+}
+.player-record-top:focus-visible { outline-color: var(--player-card-bg); }  /* 밝은 배경 위라 검정 선 */
+
+/* =====================================================
+   펼침 상태 (.expanded)
+   ===================================================== */
+.player.expanded .player-record-top { height: 0; pointer-events: none; }
+
+.player.expanded .player-card {
+  width: var(--card-w-open);
+  height: calc(var(--card-h-open) + var(--extra-vol) + var(--extra-list));
+}
+
+.player.expanded .player-info {
+  height: var(--info-h-open);
+  pointer-events: auto;  /* 펼쳤을 때만 클릭 가능 (접기) */
+  cursor: pointer;
+}
+.player.expanded .player-info-record { margin-right: 0.75rem; opacity: 1; }
+.player.expanded .player-time { width: 2.5rem; opacity: 1; }
+.player.expanded .player-btn-side { flex-basis: 3rem; opacity: 1; visibility: visible; }
+
+/* 볼륨 바 / 노래 목록 열림: 행 높이와 카드 높이 증가량을 같이 바꿈 */
+.player.expanded.volume-open { --extra-vol: var(--volume-h); }
+.player.expanded.list-open   { --extra-list: var(--list-h); }
+
+/* 둘 다 열리면 볼륨 바가 목록 칸 안에서 한 줄 자리를 나눠 씀 → 카드 높이는 목록만 열렸을 때와 같음 */
+.player.expanded.volume-open.list-open { --extra-vol: 0rem; }
+
+.player.expanded.volume-open .player-volume,
+.player.expanded.list-open .player-list { opacity: 1; visibility: visible; }
+.player.expanded.volume-open .player-volume { height: var(--volume-h); }
+.player.expanded.list-open .player-list { height: var(--list-h); }
+
+/* 둘 다 열렸을 때 목록: 볼륨 바 높이만큼 줄어서 4줄 → 3줄 (--volume-h 가 목록 한 줄 높이와 같아 딱 맞음) */
+.player.expanded.volume-open.list-open .player-list { height: calc(var(--list-h) - var(--volume-h)); }
+/* 움직임 줄이기 설정: 전환/회전 없이 즉시 변경 */
+@media (prefers-reduced-motion: reduce) {
+  .player,
+  .player * { transition: none; animation: none; }
+}
