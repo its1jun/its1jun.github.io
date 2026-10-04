@@ -1,0 +1,67 @@
+.bgx-shooting-stars {
+  --c: var(--bgx-color, #3b82f6);
+  font-size: var(--bgx-size, 16px);
+  position: fixed;        /* absolute → fixed : 스크롤해도 화면 전체에 고정 */
+  inset: 0;
+  z-index: -1;            /* 추가: 모든 내용 뒤로 보내기 */
+  pointer-events: none;   /* 추가: 클릭이 배경에 막히지 않게 하기 */
+  overflow: hidden;
+  background: linear-gradient(160deg, #03050d 30%, color-mix(in srgb, var(--c) 30%, #0b1024));
+}
+
+.bgx-shooting-stars span {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--len);
+  height: 0.1em;
+  border-radius: 999em;
+  background: linear-gradient(to right, transparent, color-mix(in srgb, var(--c) 70%, transparent) 65%, #fff);
+  rotate: 152deg;
+  opacity: 0;
+  animation: bgx-shooting-stars-fly var(--dur) linear forwards;
+}
+
+.bgx-shooting-stars span::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.1em;
+  width: 0.26em;
+  height: 0.26em;
+  margin-top: -0.13em;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0.5em 0.12em color-mix(in srgb, var(--c) 80%, #fff);
+}
+
+@keyframes bgx-shooting-stars-fly {
+  0%   { transform: translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateX(30em); opacity: 0; }
+}
+
+.bgx-shooting-stars i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #fff;
+  opacity: var(--o);
+  animation: bgx-twinkle var(--t) ease-in-out infinite alternate;
+}
+@keyframes bgx-twinkle {
+  from { opacity: var(--o); }
+  to   { opacity: calc(var(--o) * 0.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgx-shooting-stars, .bgx-shooting-stars *, .bgx-shooting-stars::before, .bgx-shooting-stars::after, .bgx-shooting-stars *::before, .bgx-shooting-stars *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
