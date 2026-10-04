@@ -5,21 +5,27 @@
 [폴더 구조]
 
 my-site/
-├── index.html          메인 페이지. 화면에 보이는 뼈대(HTML)
-├── playlist.json       음악 곡 목록 (경로 + 제목)
-├── architecture.txt    이 문서
-├── .gitattributes      Git 설정 파일
-├── css/                디자인(스타일) 파일
-│   ├── base.css            사이트 전체 공통 스타일
-│   ├── music-player.css    음악 플레이어 전용 스타일
-│   ├── site-menu.css       사이트 메뉴 전용 스타일
-│   └── animations.css      재사용 애니메이션 모음
-├── js/                 동작(기능) 파일
-│   ├── music-player.js     음악 플레이어 기능
-│   └── site-menu.js        사이트 메뉴 기능 (현재: 열기/닫기만)
-└── assets/             음악, 이미지 같은 자료 파일
-    ├── audio/              음악 (mp3)
-    └── images/             이미지
+├── index.html                    # 메인 틀. 슬롯 3개 + 로더/라우터 연결만 있는 얇은 뼈대
+├── architecture.txt              # 이 문서
+├── .gitattributes                # Git 설정 파일
+├── css/                          # 사이트 전체가 함께 쓰는 디자인 파일
+│   ├── base.css                  # 사이트 전체 공통 스타일 + :root 변수
+│   └── animations.css            # 재사용 애니메이션 모음
+├── js/
+│   └── core/                     # 사이트 전체를 움직이는 핵심 기능
+│       ├── component-loader.js   # 컴포넌트 자동 불러오기
+│       └── page-router.js        # 주소의 #이름 에 맞는 페이지 보여주기
+├── components/                   # 화면 조각(기능) 모음. 기능마다 폴더 하나, 안에 html/css/js 한 세트
+│   ├── music-player/             # 음악 플레이어 (music-player.html / .css / .js)
+│   ├── site-menu/                # 사이트 메뉴 (site-menu.html / .css / .js)
+│   └── shooting-stars/           # 별똥별 배경 (shooting-stars.html / .css / .js)
+├── pages/                        # 페이지 모음. 페이지마다 폴더 하나
+│   └── home/                     # 첫 화면 (home.html)
+├── data/                         # 데이터 파일
+│   └── playlist.json             # 음악 곡 목록 (경로 + 제목 + 가수)
+└── assets/                       # 음악, 이미지 같은 자료 파일
+    ├── audio/                    # 음악 (mp3)
+    └── images/                   # 이미지
 
 
 [각 파일의 역할]
@@ -31,16 +37,19 @@ JSON  = 데이터 (곡 목록)
 
 
 [규칙]
-1. 새 기능을 만들면 기능 이름으로 파일을 나눈다.
-   예) 갤러리 -> css/gallery.css, js/gallery.js
-2. HTML 조각(플레이어 박스 등)은 따로 파일로 나누지 않고 index.html 안에 둔다.
-3. 새 파일은 종류에 맞는 폴더에 넣는다.
-   음악 -> assets/audio, 이미지 -> assets/images
-4. 파일 이름은 영문 소문자와 하이픈(-) 또는 언더스코어(_)로 짓는다.
+1. 새 기능(화면 조각)을 만들면 components/기능이름/ 폴더를 만들고,
+   그 안에 기능이름.html / 기능이름.css / 기능이름.js 를 둔다.
+   폴더 이름과 파일 이름은 반드시 같아야 한다.
+   예) 갤러리 -> components/gallery/gallery.html, gallery.css, gallery.js
+2. 새 페이지는 pages/페이지이름/페이지이름.html 로 만든다. (아래 [페이지 추가하는 법] 참고)
+3. 여러 기능이 함께 쓰는 CSS 는 css/ 에, 사이트 전체 핵심 JS 는 js/core/ 에 둔다.
+4. 데이터(곡 목록 등)는 data/, 음악은 assets/audio, 이미지는 assets/images 에 넣는다.
+5. 파일 이름은 영문 소문자와 하이픈(-) 또는 언더스코어(_)로 짓는다.
    한글과 공백은 피한다. (화면에 보이는 제목은 playlist.json의 title에 한글 가능)
-5. 새 css/js 파일을 만들면 index.html에 연결해야 동작한다.
-   - CSS: <head> 안에 <link rel="stylesheet" href="css/파일.css">
-   - JS : </body> 바로 위에 <script src="js/파일.js"></script>
+6. 컴포넌트/페이지의 .html 파일은 맨 마지막 줄에 </body> 를 넣는다.
+   (Live Server 오류 방지. 자세한 이유는 js/core/component-loader.js 주석 참고)
+7. 컴포넌트는 index.html 에 슬롯 한 줄만 추가하면 연결된다. (아래 [컴포넌트 추가하는 법] 참고)
+   css/js 파일을 index.html 에 따로 연결하지 않는다.
 
 
 [크기·색상 바꾸는 법 (하드코딩 금지)]
@@ -53,38 +62,65 @@ JSON  = 데이터 (곡 목록)
   서로 겹치지 않도록 너비를 계산식(min, calc)으로 제한한다.
 
 
+[컴포넌트 추가하는 법] (js/core/component-loader.js)
+1. components/기능이름/ 폴더를 만들고 기능이름.html / .css / .js 세 파일을 넣는다.
+2. index.html 에서 원하는 위치에 한 줄을 추가한다.
+   <div data-component="기능이름"></div>
+3. 로더가 이 자리를 components/기능이름/ 의 내용으로 자동으로 채운다.
+   순서: CSS 와 HTML 을 함께 불러옴 -> HTML 삽입 -> JS 실행
+4. 컴포넌트끼리는 서로 기다리지 않고 동시에 불러온다.
+   하나가 실패해도 나머지는 계속 진행한다. (오류는 콘솔에 표시)
+5. 현재 슬롯: music-player(왼쪽 아래), site-menu(오른쪽 아래), shooting-stars(배경)
+
+
+[페이지 추가하는 법] (js/core/page-router.js)
+1. pages/페이지이름/페이지이름.html 을 만들고 내용을 쓴다. 맨 끝에 </body> 한 줄을 넣는다.
+2. 주소 끝에 #페이지이름 을 붙여서 확인한다. 예) .../index.html#about
+3. 링크를 걸 때는 <a href="#페이지이름"> 으로 쓴다. index.html 은 고칠 필요가 없다.
+4. 주소에 #이 없으면 home 을 보여주고, 없는 이름이면 home 으로 돌아간다.
+5. 페이지를 바꿔도 index.html 은 다시 불러오지 않는다.
+   그래서 음악 플레이어, 메뉴, 별똥별이 그대로 유지되고 음악이 끊기지 않는다.
+6. 페이지 안의 내용은 <main id="page-view"> 안에 들어간다.
+
+
 [곡 추가 방법]
 1. mp3 파일을 assets/audio/ 에 넣는다.
-2. playlist.json에 한 줄을 추가한다.
+2. data/playlist.json 에 한 줄을 추가한다.
    - 곡과 곡 사이에는 쉼표(,)를 넣는다.
    - 마지막 곡 뒤에는 쉼표를 넣지 않는다.
+   - artist(가수)는 생략할 수 있다. 없으면 빈 칸으로 표시된다.
 
 예)
 [
-  { "src": "assets/audio/first_song.mp3",  "title": "첫 번째 곡" },
+  { "src": "assets/audio/first_song.mp3",  "title": "첫 번째 곡",  "artist": "가수 이름" },
   { "src": "assets/audio/second_song.mp3", "title": "두 번째 곡" }
 ]
 
 
 [확인 방법]
-index.html을 더블클릭해서 열면 보안 정책 때문에 playlist.json을 읽지 못할 수 있다.
-(이 경우 js/music-player.js 안의 기본 목록이 대신 사용된다.)
-정확히 확인하려면 다음 중 하나를 사용한다.
+이 사이트는 fetch 로 컴포넌트, 페이지, 곡 목록을 읽는다.
+index.html 을 더블클릭해서 열면 보안 정책 때문에 아무것도 읽지 못해
+플레이어, 메뉴, 별똥별, 페이지 내용이 모두 나오지 않는다.
+(data/playlist.json 만 못 읽을 때는 components/music-player/music-player.js 안의 기본 목록이 대신 쓰인다.)
+반드시 다음 중 하나로 확인한다.
 - VS Code의 Live Server 확장 프로그램
 - GitHub Pages 등에 업로드
+CSS/JS를 고친 뒤 화면이 그대로면 Ctrl+Shift+R (강력 새로고침)을 한다.
 
 
 [사이트 메뉴에 항목 추가하는 법]
-1. index.html의 settings-panel 안에서 <div class="site-menu-row"> 블록을
-   복사해 아래에 붙여넣고 내용을 바꾼다.
-2. 동작은 js/site-menu.js에 추가한다.
-3. 화면 배치
+1. components/site-menu/site-menu.html 의 .site-menu-panel 안에
+   <div class="site-menu-row"> 블록을 추가하고 내용을 쓴다.
+2. 동작은 components/site-menu/site-menu.js 에 추가한다.
+3. 링크 아이콘은 .site-menu-links 안의 <a class="site-menu-link"> 를 복사해서 href 를 바꾼다.
+   빈 칸은 <span class="site-menu-link site-menu-link-empty"> 한 줄.
+4. 화면 배치
    - 왼쪽 아래 : 음악 플레이어
    - 오른쪽 아래: 사이트 메뉴 (가로줄 3개 버튼)
 
 
 [애니메이션 사용법] (css/animations.css)
-원하는 요소의 class에 이름을 추가한다. (미리보기: animation-demo.html)
+원하는 요소의 class에 이름을 추가한다.
 
   이름              효과                    기본 방향
   anim-float-in     부드럽게 떠오르기       아래에서 위로
@@ -95,6 +131,8 @@ index.html을 더블클릭해서 열면 보안 정책 때문에 playlist.json을
   anim-scale-out    작아지며 사라지기       (방향 없음)
   anim-slide-out    슬라이드로 사라지기     위로
   (-out은 사라진 뒤에도 투명 상태 유지. 방향은 to-top / to-bottom / to-left / to-right)
+
+  anim-spin         계속 회전 (LP판)        (방향 없음, 한 바퀴 시간은 --spin-duration)
 
 방향 클래스 (float, slide에 함께 추가): from-top / from-bottom / from-left / from-right
   예) <div class="anim-slide-in from-bottom">   (아래에서 올라옴)
@@ -122,10 +160,13 @@ index.html을 더블클릭해서 열면 보안 정책 때문에 playlist.json을
 
 - 목록(.list-open)이 열려 있을 때 볼륨 바를 열면, 볼륨 바가 목록의 한 줄(--volume-h = --list-item-h) 자리를 차지해 목록이 4줄 → 3줄이 되고 카드 높이는 그대로다.
 - 제목이 영역보다 길면(펼친 상태) 5초 쉬고 → 왼쪽으로 한 바퀴 흐르고 → 정지 → 반복.
-  원본+복제본을 이어 붙여 끊김 없이 보이게 한다. 대기 시간/속도는 music-player.js 맨 위 상수.
+  원본+복제본을 이어 붙여 끊김 없이 보이게 한다. 대기 시간/속도는 components/music-player/music-player.js 의 MARQUEE_DELAY_MS, MARQUEE_SPEED.
 - 맨 왼쪽 버튼 = 노래 목록 버튼 (누르면 목록이 열림), 맨 오른쪽 버튼 = 볼륨 바 열기/닫기
 - 볼륨은 localStorage "volume" 에 저장 (기본 20%)
 
 [앞으로 추가 예정]
 
+- 페이지마다 전용 CSS/JS 가 필요해졌을 때의 처리 (페이지를 바꿔도 JS 가 남아 겹치는 문제 포함).
+  아직 설계하지 않았다. 처음 필요해질 때 같이 설계한다.
+- 페이지가 바뀔 때의 전환 애니메이션 (현재는 없음)
 - (여기에 추가하고 싶은 기능을 적어둔다)
